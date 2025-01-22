@@ -28,7 +28,7 @@ export default function Register() {
     async function handleSignUp({name, email, password}: FormDataProps){
         try {
             const response = await api.post('register', {name, email, password})
-            console.log(response.data)
+            
         } catch (error) {
             
         }
