@@ -5,7 +5,7 @@ export default function ProtectedRoutes() {
     
 const {Navigator, Screen} = createNativeStackNavigator()
     return (
-        <Navigator>
+        <Navigator screenOptions={{headerShown: false}}>
 
             <Screen name="dashboard" component={Dashboard} />
       </Navigator>

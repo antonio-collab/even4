@@ -6,7 +6,7 @@ export default function PublicRoutes() {
 const {Navigator, Screen} = createNativeStackNavigator()
 
     return (
-        <Navigator>
+        <Navigator screenOptions={{headerShown: false}}>
             <Screen name="login" component={Login} />
             <Screen name="register" component={Register} />
       </Navigator>
