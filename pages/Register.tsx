@@ -10,6 +10,13 @@ import { View,
 import Colors from '../contantes/Colors'
 import { Ionicons } from '@expo/vector-icons'
 import { useState } from 'react'
+import { api } from '../services/api';
+
+type FormDataProps = {
+    name: string;
+    email: string;
+    password: string;
+  };
 
 export default function Register() {
 
@@ -18,12 +25,13 @@ export default function Register() {
     const [password, setPassword]= useState('');
     const [loading, setLoading]= useState('');
 
-    function handleSignUp(){
-        console.log({
-            name,
-            email, 
-            password
-        })
+    async function handleSignUp({name, email, password}: FormDataProps){
+        try {
+            const response = await api.post('register', {name, email, password})
+            console.log(response.data)
+        } catch (error) {
+            
+        }
     }
     return (
         <SafeAreaView style={{flex: 1}}>
@@ -81,7 +89,7 @@ export default function Register() {
                     />
                 </View>
 
-                <Pressable style={styles.button} onPress={handleSignUp }>
+                <Pressable style={styles.button} onPress={() => handleSignUp({name, email, password}) }>
                     <Text style={styles.buttonText}> Cadastrar</Text>
                 </Pressable>
 
