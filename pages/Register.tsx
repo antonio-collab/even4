@@ -8,11 +8,12 @@ export default function Register() {
     const { login } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [phone, setPhone] = useState('');
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
     function handleSign() {
-        if (!email || !password) {
+        if (!email || !password || !phone) {
             alert("Por favor, preencha todos os campos!");
             return;
         }
@@ -33,7 +34,6 @@ export default function Register() {
 
     return (
         <View style={styles.container}>
-
             <View style={styles.form}>
                 <Text>Nome</Text>
                 <View style={styles.inputContainer}>
@@ -76,6 +76,9 @@ export default function Register() {
                     <TextInput
                         placeholder="Digite seu Telefone"
                         style={styles.input}
+                        value={phone}
+                        onChangeText={(text) => setPhone(text.replace(/[^0-9]/g, ''))}
+                        keyboardType="numeric"
                     />
                 </View>
 
@@ -85,11 +88,14 @@ export default function Register() {
                     </Text>
                 </TouchableOpacity>
 
-                <Text>
-                    Já possui uma conta?
-                    <Text style={styles.textFooter}>  Faça login</Text>
-                </Text>
-
+                <View style={styles.textFooter}>
+                    <Text>
+                        Já possui uma conta?{'  '}
+                    </Text>
+                    <TouchableOpacity>
+                        <Text style={styles.linkFooter}>Faça login</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         </View>
     );
@@ -146,8 +152,12 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '500',
     },
-    textFooter: {
+    linkFooter: {
         color: Colors.salmon,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+    },
+    textFooter: {
+        flex: 1,
+        flexDirection: 'row'
     }
 });
