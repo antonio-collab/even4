@@ -3,8 +3,8 @@ export default {
     blank: '#000',
     white:'#FFF',
     green: "#99CF1D",
-    gray:"#DDDDDD",
+    gray:"#a9a9a9",
     black:"1D1D1D",
-    red:"#F0534F",
+    salmon:"#F0534F",
     };
     
