@@ -1,168 +1,153 @@
-import { View, 
-    Text, 
-    StyleSheet, 
-    TextInput,
-     Pressable, 
-     SafeAreaView,
-    ScrollView
- } from 'react-native'
-
-import Colors from '../contantes/Colors'
-import { Ionicons } from '@expo/vector-icons'
-import { useState } from 'react'
-import { api } from '../services/api';
-
-type FormDataProps = {
-    name: string;
-    email: string;
-    password: string;
-  };
+import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { useState } from 'react';
+import Colors from '../contantes/Colors';
+import { useAuth } from '../context/hooks/useAuth';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; 
 
 export default function Register() {
+    const { login } = useAuth();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
-    const [name, setName] = useState('');
-    const [email, setEmail]= useState('');
-    const [password, setPassword]= useState('');
-    const [loading, setLoading]= useState('');
-
-    async function handleSignUp({name, email, password}: FormDataProps){
-        try {
-            const response = await api.post('register', {name, email, password})
-            console.log(response.data)
-        } catch (error) {
-            
+    function handleSign() {
+        if (!email || !password) {
+            alert("Por favor, preencha todos os campos!");
+            return;
         }
+
+        setLoading(true);
+
+        login(email, password)
+            .then(() => {
+                alert("Cadastro realizado com sucesso!");
+            })
+            .catch((error) => {
+                alert("Erro ao fazer login: " + error.message);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     }
+
     return (
-        <SafeAreaView style={{flex: 1}}>
-        <ScrollView style={{flex: 1}}>
         <View style={styles.container}>
-            <View style={styles.header}>
-
-                <Pressable
-                    style={styles.backButton}
-                >
-                    <Ionicons name="arrow-back" size={24} color={Colors.white} />
-                </Pressable>
-
-
-                <Text style={styles.logoText}>
-                    Dev <Text style={{ color: Colors.green }}>App 16:23</Text>
-                </Text>
-
-
-                <Text style={styles.slogan}>Criar uma conta</Text>
-            </View>
 
             <View style={styles.form}>
-
-                <View style={styles.label}>
-
-                    <Text>Nome completo</Text>
+                <Text>Nome</Text>
+                <View style={styles.inputContainer}>
                     <TextInput
-                        placeholder='Nome completo...'
+                        placeholder="Digite seu Nome"
                         style={styles.input}
-                        value={name}
-                        onChangeText={setName}
                     />
                 </View>
 
-                <View style={styles.label}>
-
-                    <Text>Email</Text>
+                <Text>E-mail</Text>
+                <View style={styles.inputContainer}>
                     <TextInput
-                        placeholder='Digite seu email'
+                        placeholder="Digite seu E-mail"
                         style={styles.input}
                         value={email}
                         onChangeText={setEmail}
                     />
                 </View>
 
-                <View style={styles.label}>
-
-                    <Text>Senha</Text>
+                <Text>Senha</Text>
+                <View style={styles.inputContainer}>
                     <TextInput
-                        placeholder='Digite sua senha'
+                        placeholder="Digite sua Senha"
                         style={styles.input}
+                        secureTextEntry={!showPassword}
                         value={password}
                         onChangeText={setPassword}
                     />
+                    <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.icon}>
+                        <Icon 
+                            name={showPassword ? "eye-off" : "eye"}
+                            size={20}
+                            color={Colors.gray}
+                        />
+                    </TouchableOpacity>
                 </View>
 
-                <Pressable style={styles.button} onPress={() => handleSignUp({name, email, password}) }>
-                    <Text style={styles.buttonText}> Cadastrar</Text>
-                </Pressable>
+                <Text>Telefone</Text>
+                <View style={styles.inputContainer}>
+                    <TextInput
+                        placeholder="Digite seu Telefone"
+                        style={styles.input}
+                    />
+                </View>
+
+                <TouchableOpacity style={styles.button} onPress={handleSign}>
+                    <Text style={styles.buttonText}>
+                        {loading ? "Carregando..." : "Criar Conta"}
+                    </Text>
+                </TouchableOpacity>
+
+                <Text>
+                    Já possui uma conta?
+                    <Text style={styles.textFooter}>  Faça login</Text>
+                </Text>
 
             </View>
-
-
         </View>
-        </ScrollView>
-        </SafeAreaView>
-    )
+    );
 }
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 34,
-        backgroundColor: Colors.zinc,
-        alignItems: 'center'
-    },
-    header: {
-        paddingRight: 14,
-    },
-    logoText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: Colors.white,
-        marginBottom: 8,
-    },
-    slogan: {
-        fontSize: 34,
-        color: Colors.white,
-        marginBottom: 34,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: Colors.white,
     },
     form: {
-        flex: 1,
-        backgroundColor: Colors.white,
-        borderTopLeftRadius: 16,
-        borderTopRightRadius: 16,
-        paddingTop: 24,
         paddingLeft: 14,
         paddingRight: 14,
         width: '100%',
     },
-    label: {
-        color: Colors.zinc,
-        marginBottom: 4,
-    },
-    input: {
+    inputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
         borderWidth: 1,
         borderColor: Colors.gray,
         borderRadius: 8,
         marginBottom: 16,
-        paddingHorizontal: 8,
-        paddingTop: 14,
-        paddingBottom: 14,
+    },
+    input: {
+        flex: 1,
+        paddingVertical: 16,
+        paddingLeft: 7,
+        color: Colors.black,
+    },
+    icon: {
+        margin: 5,
     },
     button: {
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.salmon,
         paddingTop: 14,
         paddingBottom: 14,
         alignItems: 'center',
         justifyContent: 'center',
         width: '100%',
         borderRadius: 8,
+        marginBottom: 15,
     },
     buttonText: {
-        color: Colors.zinc,
+        fontSize: 16,
+        color: Colors.white,
         fontWeight: 'bold',
     },
-    backButton: {
-        backgroundColor: 'rgba(255,255,255,0.55)',
-        alignSelf: 'flex-start',
-        padding: 8,
-        borderRadius: 8,
-        marginBottom: 8,
+    link: {
+        marginTop: 16,
+        textAlign: 'left',
+        color: Colors.salmon,
+        fontSize: 14,
+        fontWeight: '500',
     },
-})
+    textFooter: {
+        color: Colors.salmon,
+        fontWeight: 'bold'
+    }
+});
