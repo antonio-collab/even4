@@ -1,83 +1,107 @@
-import { View, Text, StyleSheet, TextInput, Pressable } from 'react-native'
+import { View, Text, StyleSheet, TextInput, Pressable, Button,TouchableOpacity, Image} from 'react-native'
 import { useState } from 'react';
 import Colors from '../contantes/Colors';
 
+
 export default function Dashboard() {
 
-        const [email, setEmail]= useState('');
-        const [password, setPassword]= useState('');
-        const [loading, setLoading]= useState('');
-
+      
         function handleSign(){
             
         }
     return (
         <View style={styles.container}>
-         <Text>Crie seus eventos aqui</Text>
+          <Text style={styles.TextUser}>Olá, Usuario!</Text>
+             
+            <View style={styles.card}>  
+                <Text style={styles.TextP}>Agora que está tudo pronto. 
+                    Vamos tornar seus eventos extraordinários, começando aqui!</Text>
+                    <TouchableOpacity style={styles.button} onPress={handleSign}>
+                    <Text style={styles.buttonText}>
+                       Planeje seu Evento
+                    </Text>
+                </TouchableOpacity>
+             </View>
 
+            <Text style={styles.TextC}>Próximos eventos</Text>
+           
+           <View style={styles.cardCalender}>
+              <Image source={require('../assets/Calendar Icon.png')} style={styles.image} />
+              <Text style={styles.TextCalen}>Seu calendário de eventos é uma tela em branco. Use Event Finding para pintar momentos memoráveis.</Text>
+           </View>
+
+             
         </View>
     )
 }
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 34,
-        backgroundColor: "#f00",
-        alignItems: 'center'
-    },
-    header: {
-        paddingLeft: 14,
-        paddingRight: 14,
-    },
-    logoText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: Colors.white,
-        marginBottom: 8,
-    },
-    slogan: {
-        fontSize: 34,
-        color: Colors.white,
-        marginBottom: 34,
-    },
-    form: {
-        flex: 1,
+        flexDirection: "column",
         backgroundColor: Colors.white,
-        borderTopLeftRadius: 16,
-        borderTopRightRadius: 16,
-        paddingTop: 24,
-        paddingLeft: 14,
-        paddingRight: 14,
-        width: '100%',
+        alignItems:"center"
     },
-    label: {
-        color: Colors.zinc,
-        marginBottom: 4,
+    TextUser:{
+       position:"relative",
+       paddingTop:100,
+       marginRight:180,
+       fontSize:30,
+       fontWeight:"bold"
     },
-    input: {
-        borderWidth: 1,
-        borderColor: Colors.gray,
-        borderRadius: 8,
-        marginBottom: 16,
-        paddingHorizontal: 8,
-        paddingTop: 14,
-        paddingBottom: 14,
+    card:{
+        width: 380,
+        height: 185,
+        backgroundColor: Colors.salmonWhite,
+        borderRadius:10,
+        marginHorizontal: 30,
+        marginVertical: 25,
     },
-    button: {
-        backgroundColor: Colors.green,
-        paddingTop: 14,
-        paddingBottom: 14,
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '100%',
-        borderRadius: 8,
+    TextP:{
+        fontSize:20,
+        padding:15,
+    },
+    button:{
+        width: 190,
+        height: 50,
+        backgroundColor: Colors.salmon,
+        alignItems: "center",
+        justifyContent:"center",
+        borderRadius:10,
+        marginHorizontal: 20,
+        marginVertical: 20,
+
     },
     buttonText:{
-        color: Colors.zinc,
-        fontWeight:'bold',
+        fontSize:20,
+        color: Colors.white,
+        fontWeight: "bold",
     },
-    link:{
-        marginTop: 16,
-        textAlign:'center',
-    }
+     TextC:{
+        paddingTop:100,
+        marginRight:130,
+        fontSize:25,
+        fontWeight:"bold",
+     },
+     cardCalender:{
+        flexDirection:"row",
+        width: 400,
+        height: 185,
+        marginHorizontal: 30,
+
+     },
+     image:{
+       width:130,
+       height:90,
+       marginVertical:45,
+     },
+     TextCalen:{
+        fontSize:20,
+        padding:15,
+        marginRight:100,
+        marginVertical:25,
+        color: Colors.Textgray
+     }
+    
+
+   
 })
