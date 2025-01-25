@@ -1,3 +1,4 @@
+import React from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
 import Colors from '../contantes/Colors';
@@ -87,14 +88,19 @@ export default function Register() {
 
                 <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('login')}>
                     <Text style={styles.buttonText}>
-                        "Criar Conta"
+                        Criar Conta
                     </Text>
                 </TouchableOpacity>
 
-                <Text>
-                    Já possui uma conta?
-                    <Text style={styles.textFooter}>  Faça login</Text>
-                </Text>
+                <View style={styles.footerContainer}>
+                    <Text>
+                        Já possui uma conta?
+                    </Text>
+                    
+                    <TouchableOpacity onPress={() => navigation.navigate('login')}>
+                        <Text style={styles.textFooter}>Faça login</Text>
+                    </TouchableOpacity>
+                </View>
 
             </View>
         </View>
@@ -151,6 +157,9 @@ const styles = StyleSheet.create({
         color: Colors.salmon,
         fontSize: 14,
         fontWeight: '500',
+    },
+    footerContainer: {
+        alignItems: 'center'
     },
     textFooter: {
         color: Colors.salmon,
