@@ -18,7 +18,8 @@ export default function Routes() {
 
   return (
     <NavigationContainer>
-      {user ? <PublicRoutes /> : <ProtectedRoutes /> }
+       <ProtectedRoutes /> 
     </NavigationContainer>
   );
 }
+//{user ? <PublicRoutes /> : <ProtectedRoutes /> }
