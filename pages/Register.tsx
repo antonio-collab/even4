@@ -8,7 +8,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { PublicStackParamList } from '../routes/public.routes';
 
-type NavigationProps = NativeStackNavigationProp<PublicStackParamList, 'home'>;
+type NavigationProps = NativeStackNavigationProp<PublicStackParamList, 'register'>;
 
 export default function Register() {
     const navigation = useNavigation<NavigationProps>()
