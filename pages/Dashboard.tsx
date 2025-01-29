@@ -11,19 +11,28 @@ import {
 import { useState } from "react";
 import Colors from "../contantes/Colors";
 import React from "react";
+import { useAuth } from "../hooks/useAuth";
+import { useNavigation } from "@react-navigation/native";
+import { AppNavigatorRoutesProps } from "../routes/protected.routes";
 
 export default function Dashboard() {
-  function handleSign() {}
+  const { user } = useAuth();
+
+  const navigation = useNavigation<AppNavigatorRoutesProps>();
+
   return (
     <View style={styles.container}>
-      <Text style={styles.TextUser}>Olá, Usuario!</Text>
+      <Text style={styles.TextUser}>Olá, {user.nome}!</Text>
 
       <View style={styles.card}>
         <Text style={styles.TextP}>
           Agora que está tudo pronto. Vamos tornar seus eventos extraordinários,
           começando aqui!
         </Text>
-        <TouchableOpacity style={styles.button} onPress={handleSign}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("createEvent")}
+        >
           <Text style={styles.buttonText}>Planeje seu Evento</Text>
         </TouchableOpacity>
       </View>

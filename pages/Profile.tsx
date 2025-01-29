@@ -6,6 +6,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { PublicStackParamList } from "../routes/public.routes";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../hooks/useAuth";
+import { AppNavigatorRoutesProps } from "../routes/protected.routes";
 
 type NavigationProps = NativeStackNavigationProp<
   PublicStackParamList,
@@ -14,6 +15,8 @@ type NavigationProps = NativeStackNavigationProp<
 
 export default function Profile() {
   const { logout, user } = useAuth();
+
+  const navigation = useNavigation<AppNavigatorRoutesProps>();
 
   const handleLogout = async () => {
     Alert.alert("Confirmação", "Deseja realmente sair?", [
@@ -43,7 +46,10 @@ export default function Profile() {
       </View>
 
       <View>
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity
+          style={styles.menuItem}
+          onPress={() => navigation.navigate("events")}
+        >
           <Text style={styles.menuText}>Meus Eventos</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.menuItem}>

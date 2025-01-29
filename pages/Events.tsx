@@ -67,6 +67,7 @@ export default function Events() {
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderEventItem}
         contentContainerStyle={styles.listContainer}
+        showsVerticalScrollIndicator={false}
       />
     </View>
   );
