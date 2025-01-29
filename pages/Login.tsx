@@ -9,7 +9,7 @@ import {
 import { useState } from "react";
 import Colors from "../contantes/Colors";
 import { useAuth } from "../hooks/useAuth";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons"; // Importa a biblioteca de ícones
+import Icon from "react-native-vector-icons/MaterialCommunityIcons"; 
 import { AxiosError } from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "../routes/protected.routes";
