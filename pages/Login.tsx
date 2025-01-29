@@ -4,6 +4,7 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { useState } from "react";
 import Colors from "../contantes/Colors";
@@ -13,6 +14,7 @@ import { AxiosError } from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "../routes/protected.routes";
 import React from "react";
+import { Loading } from "../components/Loading";
 
 export default function Login() {
   const { login } = useAuth();
@@ -35,6 +37,7 @@ export default function Login() {
 
       await login(email, password);
     } catch (error) {
+      Alert.alert("Erro ao fazer login! Tente novamente mais tarde!");
       console.log(error);
     } finally {
       setLoading(false);
@@ -81,9 +84,13 @@ export default function Login() {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleSign}>
+        <TouchableOpacity
+          style={loading ? styles.buttonDisabled : styles.button}
+          onPress={handleSign}
+          disabled={loading}
+        >
           <Text style={styles.buttonText}>
-            {loading ? "Carregando..." : "Login"}
+            {loading ? <Loading /> : "Login"}
           </Text>
         </TouchableOpacity>
       </View>
@@ -122,6 +129,15 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: Colors.salmon,
+    paddingTop: 14,
+    paddingBottom: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    borderRadius: 8,
+  },
+  buttonDisabled: {
+    backgroundColor: Colors.salmonWhite,
     paddingTop: 14,
     paddingBottom: 14,
     alignItems: "center",
