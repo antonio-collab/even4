@@ -4,7 +4,9 @@ import { useNavigation } from '@react-navigation/native';
 import Colors from '../contantes/Colors';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { PublicStackParamList } from '../routes/public.routes';
+import React from 'react';
 
+  
 type NavigationProps = NativeStackNavigationProp<PublicStackParamList, 'home'>;
 
 export default function Home() {

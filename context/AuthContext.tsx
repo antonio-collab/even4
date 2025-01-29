@@ -3,7 +3,7 @@ import { api } from "../services/api";
 import { storageUserSave, storageUserGet, storageUserRemove } from "../storage/storageUser";
 import { UserDTO } from "../dtos/UserDTO";
 import { storageAuthTokenGet, storageAuthTokenRemove } from "../storage/storageAuthToken";
-
+import React from "react";
 type User = {
   token: string;
 };
@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
   async function login(email: string, password: string) {
     try {
-      const { data } = await api.post("signin", {
+      const { data } = await api.post("usuarios/login", {
         email,
         password,
       });

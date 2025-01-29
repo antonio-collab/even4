@@ -5,12 +5,14 @@ import {
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Home from "../pages/Home";
+import React from "react";
 
 type AuthRoutes = {
   login: undefined;
   register: undefined;
   home: undefined;
 };
+
 
 export type AuthNavigatorRoutesProps = NativeStackNavigationProp<AuthRoutes>;
 

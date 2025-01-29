@@ -18,7 +18,7 @@ type AppRoutes = {
   dashboard: undefined;
   events: undefined;
   createEvent: undefined;
-  profile: undefined;width: 200
+  profile: undefined;
 };
 
 export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>;

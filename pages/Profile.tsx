@@ -1,14 +1,40 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Colors from "../contantes/Colors";
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { PublicStackParamList } from '../routes/public.routes';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { PublicStackParamList } from "../routes/public.routes";
 
-type NavigationProps = NativeStackNavigationProp<PublicStackParamList, 'profile'>;
+type NavigationProps = NativeStackNavigationProp<PublicStackParamList, "home">;
 
 export default function Profile() {
-  const navigation = useNavigation<NavigationProps>()
+  const navigation = useNavigation<NavigationProps>();
+
+  const handleLogout = async () => {
+    Alert.alert(
+      "Confirmação",
+      "Deseja realmente sair?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Sair",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              // Remove o token de autenticação
+              await AsyncStorage.removeItem("token");
+              // Redireciona para a tela de login
+              navigation.navigate("login");
+            } catch (error) {
+              Alert.alert("Erro", "Não foi possível fazer o logout.");
+            }
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -28,7 +54,7 @@ export default function Profile() {
         <TouchableOpacity style={styles.menuItem}>
           <Text style={styles.menuText}>Contate-nos</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('login')}>
+        <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
           <Text style={[styles.menuText, styles.logoutText]}>Fazer Logout</Text>
         </TouchableOpacity>
       </View>
@@ -52,7 +78,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     padding: 20,
     gap: 250,
-    paddingTop: 40
+    paddingTop: 40,
   },
   header: {
     flexDirection: "row",
