@@ -9,37 +9,31 @@ import {
 } from "react-native";
 import { useState } from "react";
 import Colors from "../contantes/Colors";
-import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../hooks/useAuth";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-//import { PublicStackParamList } from "../routes/public.routes";
 import { api } from "../services/api";
-import { AxiosError } from "axios";
-
-// type NavigationProps = NativeStackNavigationProp<
-//   PublicStackParamList,
-//   "register"
-// >;
-
-type SignUpFormDataProps = {
-  name: string;
-  email: string;
-  password: string;
-};
+import { Loading } from "../components/Loading";
 
 export default function Register() {
   const { login } = useAuth();
+  const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  async function handleSignUp({ name, email, password }: SignUpFormDataProps) {
+  async function handleSignUp() {
     try {
       setLoading(true);
-      const { data } = await api.post("register", { name, email, password });
+
+      const { data } = await api.post("usuarios/registro", {
+        nome,
+        email,
+        senha: password,
+        telefone: phone,
+      });
+      console.log(data);
       Alert.alert("Cadastro realizado com sucesso!");
       await login(email, password);
     } catch (error) {
@@ -53,20 +47,16 @@ export default function Register() {
     }
   }
 
-  async function handleSign() {
-    try {
-      await login(email, password);
-    } catch (error) {
-      throw error;
-    }
-  }
-
   return (
     <View style={styles.container}>
       <View style={styles.form}>
         <Text>Nome</Text>
         <View style={styles.inputContainer}>
-          <TextInput placeholder="Digite seu Nome" style={styles.input} />
+          <TextInput
+            placeholder="Digite seu Nome"
+            onChangeText={setNome}
+            style={styles.input}
+          />
         </View>
 
         <Text>E-mail</Text>
@@ -111,9 +101,9 @@ export default function Register() {
           />
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleSign}>
-          <Text style={styles.buttonText}>
-            {loading ? "Carregando..." : "Criar Conta"}
+        <TouchableOpacity style={styles.button} onPress={handleSignUp}>
+          <Text style={styles.buttonText} disabled={loading}>
+            {loading ? <Loading /> : "Criar Conta"}
           </Text>
         </TouchableOpacity>
 

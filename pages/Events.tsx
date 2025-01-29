@@ -1,11 +1,6 @@
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  ActivityIndicator,
-} from "react-native";
+import React, { useState, useCallback } from "react";
+import { View, Text, StyleSheet, FlatList } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 import { api } from "../services/api";
 import Colors from "../contantes/Colors";
 import { Loading } from "../components/Loading";
@@ -15,8 +10,7 @@ export default function Events() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Função para buscar os eventos da API
-  async function fetchEvents() {
+  const fetchEvents = useCallback(async () => {
     try {
       const response = await api.get("eventos");
       setEvents(response.data);
@@ -26,14 +20,14 @@ export default function Events() {
     } finally {
       setLoading(false);
     }
-  }
-
-  // Executa a busca dos eventos ao carregar a tela
-  useEffect(() => {
-    fetchEvents();
   }, []);
 
-  // Renderiza cada item da lista de eventos
+  useFocusEffect(
+    useCallback(() => {
+      fetchEvents();
+    }, [fetchEvents])
+  );
+
   const renderEventItem = ({ item }) => (
     <View style={styles.eventItem}>
       <Text style={styles.eventName}>{item.nome}</Text>
@@ -45,12 +39,16 @@ export default function Events() {
     </View>
   );
 
-  // Exibe o componente de loading enquanto os dados são carregados
+  const EmptyEventItem = () => (
+    <View style={styles.containerEmptyList}>
+      <Text style={styles.titleEmptyList}>Nenhum evento cadastrado ainda!</Text>
+    </View>
+  );
+
   if (loading) {
     return <Loading />;
   }
 
-  // Exibe uma mensagem de erro caso ocorra algum problema na requisição
   if (error) {
     return (
       <View style={styles.container}>
@@ -68,6 +66,7 @@ export default function Events() {
         renderItem={renderEventItem}
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
+        ListEmptyComponent={EmptyEventItem}
       />
     </View>
   );
@@ -78,6 +77,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.white,
     padding: 16,
+  },
+  containerEmptyList: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Colors.salmon,
+    borderRadius: 10,
+    padding: 20,
+    marginVertical: 20,
+  },
+  titleEmptyList: {
+    color: Colors.white,
+    fontWeight: "700",
+    fontSize: 18,
   },
   title: {
     fontSize: 24,
