@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { useState } from "react";
 import Colors from "../contantes/Colors";
+import React from "react";
 
 export default function Dashboard() {
   function handleSign() {}
@@ -35,8 +36,8 @@ export default function Dashboard() {
           style={styles.image}
         />
         <Text style={styles.TextCalen}>
-          Seu calendário de eventos é uma tela em branco. Use Event Finding para
-          pintar momentos memoráveis.
+          Seu calendário de eventos é uma tela em branco. Use Event4 para
+          encontrar momentos memoráveis.
         </Text>
       </View>
     </View>
@@ -106,5 +107,6 @@ const styles = StyleSheet.create({
     marginRight: 100,
     marginVertical: 25,
     color: Colors.Textgray,
+    textAlign: "justify",
   },
 });
