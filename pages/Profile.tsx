@@ -1,14 +1,20 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Colors from "../contantes/Colors";
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { PublicStackParamList } from '../routes/public.routes';
-import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { PublicStackParamList } from "../routes/public.routes";
+import { useNavigation } from "@react-navigation/native";
+import { useAuth } from "../hooks/useAuth";
 
-type NavigationProps = NativeStackNavigationProp<PublicStackParamList, 'profile'>;
+type NavigationProps = NativeStackNavigationProp<
+  PublicStackParamList,
+  "profile"
+>;
 
 export default function Profile() {
-  const navigation = useNavigation<NavigationProps>()
+  const { logout } = useAuth();
+
+  const navigation = useNavigation<NavigationProps>();
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -28,7 +34,7 @@ export default function Profile() {
         <TouchableOpacity style={styles.menuItem}>
           <Text style={styles.menuText}>Contate-nos</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('login')}>
+        <TouchableOpacity style={styles.menuItem} onPress={logout}>
           <Text style={[styles.menuText, styles.logoutText]}>Fazer Logout</Text>
         </TouchableOpacity>
       </View>
@@ -52,7 +58,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     padding: 20,
     gap: 250,
-    paddingTop: 40
+    paddingTop: 40,
   },
   header: {
     flexDirection: "row",

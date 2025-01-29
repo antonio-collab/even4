@@ -9,6 +9,7 @@ import { UserDTO } from "../dtos/UserDTO";
 import {
   storageAuthTokenGet,
   storageAuthTokenRemove,
+  storageAuthTokenSave,
 } from "../storage/storageAuthToken";
 
 type User = {
@@ -35,6 +36,19 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     setUser(userData);
   }
 
+  async function storageUserAndTokenSave(userData: UserDTO, token: string) {
+    try {
+      setLoadingUserStorageData(true);
+
+      await storageUserSave(userData);
+      await storageAuthTokenSave({ token });
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoadingUserStorageData(false);
+    }
+  }
+
   async function login(email: string, password: string) {
     try {
       const { data } = await api.post("usuarios/login", {
@@ -43,8 +57,9 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       });
 
       if (data.usuario && data.token) {
-        await storageUserSave(data.usuario);
+        await storageUserAndTokenSave(data.usuario, data.token);
       }
+      await userAndTokenUpdate(data.usuario, data.token);
     } catch (error) {
       throw error;
     }
@@ -73,6 +88,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
   async function logout() {
     try {
+      console.log("Chegou no logout");
       setLoadingUserStorageData(true);
       setUser({} as UserDTO);
       await storageUserRemove();

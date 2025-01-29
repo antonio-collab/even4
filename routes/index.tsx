@@ -15,7 +15,7 @@ export default function Routes() {
 
   return (
     <NavigationContainer>
-      {user ? <ProtectedRoutes /> : <PublicRoutes />}
+      {user.id ? <ProtectedRoutes /> : <PublicRoutes />}
     </NavigationContainer>
   );
 }
