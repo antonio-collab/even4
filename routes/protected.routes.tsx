@@ -47,7 +47,7 @@ export default function ProtectedRoutes() {
             <View style={{ alignItems: "center", width: 200 }}>
               <Feather
                 name="home"
-                color={focused ? "#F0534F" : "gray"} // Cor do ícone com base no foco
+                color={focused ? "#F0534F" : "gray"} 
                 size={30}
               />
               <Text
@@ -56,7 +56,7 @@ export default function ProtectedRoutes() {
                   fontSize: 12,
                   fontWeight: "bold",
                   marginTop: 5,
-                  textAlign: "center", // Garante que o texto não quebre
+                  textAlign: "center", 
                 }}
               >
                 Inicio
@@ -73,7 +73,7 @@ export default function ProtectedRoutes() {
             <View style={{ alignItems: "center", width: 200 }}>
               <Feather
                 name="calendar"
-                color={focused ? "#F0534F" : "gray"} // Cor do ícone com base no foco
+                color={focused ? "#F0534F" : "gray"} 
                 size={30}
               />
               <Text
@@ -82,7 +82,7 @@ export default function ProtectedRoutes() {
                   fontSize: 12,
                   fontWeight: "bold",
                   marginTop: 5,
-                  textAlign: "center", // Garante que o texto não quebre
+                  textAlign: "center",
                 }}
               >
                 Eventos
@@ -99,7 +99,7 @@ export default function ProtectedRoutes() {
             <View style={{ alignItems: "center", width: 200 }}>
               <Feather
                 name="plus-circle"
-                color={focused ? "#F0534F" : "gray"} // Cor do ícone com base no foco
+                color={focused ? "#F0534F" : "gray"} 
                 size={30}
               />
               <Text
@@ -108,7 +108,7 @@ export default function ProtectedRoutes() {
                   fontSize: 12,
                   fontWeight: "bold",
                   marginTop: 5,
-                  textAlign: "center", // Garante que o texto não quebre
+                  textAlign: "center",
                 }}
               >
                 Criar eventos
@@ -125,7 +125,7 @@ export default function ProtectedRoutes() {
             <View style={{ alignItems: "center", width: 200 }}>
               <Feather
                 name="user"
-                color={focused ? "#F0534F" : "gray"} // Cor do ícone com base no foco
+                color={focused ? "#F0534F" : "gray"} 
                 size={30}
               />
               <Text
@@ -134,7 +134,7 @@ export default function ProtectedRoutes() {
                   fontSize: 12,
                   fontWeight: "bold",
                   marginTop: 5,
-                  textAlign: "center", // Garante que o texto não quebre
+                  textAlign: "center", 
                 }}
               >
                 Perfil
