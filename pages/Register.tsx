@@ -101,7 +101,10 @@ export default function Register() {
           />
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleSignUp}>
+        <TouchableOpacity
+          style={loading ? styles.buttonDisabled : styles.button}
+          onPress={handleSignUp}
+        >
           <Text style={styles.buttonText} disabled={loading}>
             {loading ? <Loading /> : "Criar Conta"}
           </Text>
@@ -156,6 +159,15 @@ const styles = StyleSheet.create({
     width: "100%",
     borderRadius: 8,
     marginBottom: 15,
+  },
+  buttonDisabled: {
+    backgroundColor: Colors.salmonWhite,
+    paddingTop: 14,
+    paddingBottom: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    borderRadius: 8,
   },
   buttonText: {
     fontSize: 16,
