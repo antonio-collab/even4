@@ -23,13 +23,13 @@ export default function PublicRoutes() {
     <Navigator screenOptions={{ headerShown: true }}>
       <Screen name="home" component={Home} options={{headerShown: false}}/>
       <Screen name="login" component={Login} options={{
-          headerTitle: "", // Remove o título "register" do cabeçalho
+          headerTitle: "", 
         }}/>
       <Screen
         name="register"
         component={Register}
         options={{
-          headerTitle: "", // Remove o título "register" do cabeçalho
+          headerTitle: "", 
         }}
       />
     </Navigator>
