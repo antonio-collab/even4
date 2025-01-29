@@ -35,7 +35,7 @@ export default function ProtectedRoutes() {
           height: 70,
           justifyContent: "center",
           alignItems: "center",
-          paddingTop: 15
+          paddingTop: 15,
         },
       }}
     >
@@ -70,7 +70,7 @@ export default function ProtectedRoutes() {
         component={Events}
         options={{
           tabBarIcon: ({ focused, color }) => (
-            <View style={{ alignItems: "center", width: 200  }}>
+            <View style={{ alignItems: "center", width: 200 }}>
               <Feather
                 name="calendar"
                 color={focused ? "#F0534F" : "gray"} // Cor do ícone com base no foco

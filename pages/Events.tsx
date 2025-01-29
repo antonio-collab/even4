@@ -1,20 +1,25 @@
-import { View, Text, StyleSheet } from 'react-native'
-import React from 'react'
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 
-const Events = () => {
+export default function Events() {
   return (
-    <View style={style.container}>
+    <View>
       <Text>Events</Text>
     </View>
-  )
+  );
 }
 
-export default Events
-
-const style = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
-})
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});

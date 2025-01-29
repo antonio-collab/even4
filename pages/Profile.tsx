@@ -13,18 +13,32 @@ type NavigationProps = NativeStackNavigationProp<
 >;
 
 export default function Profile() {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
-  const navigation = useNavigation<NavigationProps>();
+  const handleLogout = async () => {
+    Alert.alert("Confirmação", "Deseja realmente sair?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Sair",
+        style: "destructive",
+        onPress: async () => {
+          logout();
+        },
+      },
+    ]);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.avatarContainer}>
-          <Text style={styles.avatarText}>XV</Text>
+          <Text style={styles.avatarText}>
+            {user.nome.charAt(0).toUpperCase()}
+          </Text>
         </View>
         <View>
-          <Text style={styles.userName}>Xavierzera</Text>
-          <Text style={styles.userEmail}>xavi1234@server.com</Text>
+          <Text style={styles.userName}>{user.nome}</Text>
+          <Text style={styles.userEmail}>{user.email}</Text>
         </View>
       </View>
 
@@ -35,7 +49,7 @@ export default function Profile() {
         <TouchableOpacity style={styles.menuItem}>
           <Text style={styles.menuText}>Contate-nos</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.menuItem} onPress={logout}>
+        <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
           <Text style={[styles.menuText, styles.logoutText]}>Fazer Logout</Text>
         </TouchableOpacity>
       </View>
