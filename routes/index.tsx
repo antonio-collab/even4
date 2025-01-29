@@ -3,23 +3,19 @@ import ProtectedRoutes from "./protected.routes";
 import PublicRoutes from "./public.routes";
 import { useAuth } from "../hooks/useAuth";
 import { View, Text } from "react-native";
+import React from "react";
+import { Loading } from "../components/Loading";
 
 export default function Routes() {
   const { user, isLoadingUserStorageData } = useAuth();
 
-  console.log(user)
+  console.log(user);
 
-  if (isLoadingUserStorageData)
-    return (
-      <View>
-        <Text>Carregando...</Text>
-      </View>
-    );
+  if (isLoadingUserStorageData) return <Loading />;
 
   return (
     <NavigationContainer>
-       <ProtectedRoutes /> 
+      {user ? <ProtectedRoutes /> : <PublicRoutes />}
     </NavigationContainer>
   );
 }
-//{user ? <PublicRoutes /> : <ProtectedRoutes /> }

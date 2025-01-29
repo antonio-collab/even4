@@ -12,6 +12,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons"; // Importa 
 import { AxiosError } from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "../routes/protected.routes";
+import React from "react";
 
 export default function Login() {
   const { login } = useAuth();
@@ -33,7 +34,6 @@ export default function Login() {
       setLoading(true);
 
       await login(email, password);
-      
     } catch (error) {
       console.log(error);
     } finally {

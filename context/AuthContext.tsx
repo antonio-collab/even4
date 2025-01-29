@@ -1,15 +1,22 @@
 import { createContext, useState, useEffect, PropsWithChildren } from "react";
 import { api } from "../services/api";
-import { storageUserSave, storageUserGet, storageUserRemove } from "../storage/storageUser";
+import {
+  storageUserSave,
+  storageUserGet,
+  storageUserRemove,
+} from "../storage/storageUser";
 import { UserDTO } from "../dtos/UserDTO";
-import { storageAuthTokenGet, storageAuthTokenRemove } from "../storage/storageAuthToken";
+import {
+  storageAuthTokenGet,
+  storageAuthTokenRemove,
+} from "../storage/storageAuthToken";
 
 type User = {
   token: string;
 };
 
 type AuthContextProps = {
-  user: UserDTO
+  user: UserDTO;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   updateUserProfile: (userUpdated: UserDTO) => Promise<void>;
@@ -28,16 +35,15 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     setUser(userData);
   }
 
-
   async function login(email: string, password: string) {
     try {
-      const { data } = await api.post("signin", {
+      const { data } = await api.post("usuarios/login", {
         email,
-        password,
+        senha: password,
       });
 
-      if (data.user && data.token) {
-        await storageUserSave(data.user);
+      if (data.usuario && data.token) {
+        await storageUserSave(data.usuario);
       }
     } catch (error) {
       throw error;
@@ -91,9 +97,16 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     LoadUserData();
   }, []);
 
-
   return (
-    <AuthContext.Provider value={{ user, login, logout, updateUserProfile, isLoadingUserStorageData }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        login,
+        logout,
+        updateUserProfile,
+        isLoadingUserStorageData,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
