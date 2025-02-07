@@ -7,6 +7,8 @@ export default {
     black:"1D1D1D",
     salmon:"#F0534F",
     salmonWhite:"#FEEDED",
-    Textgray:"#848484"
+    Textgray:"#848484",
+    yellow: "#ffc107",
+    red: "#dc3545",
     };
     
