@@ -5,7 +5,7 @@ import Colors from "../contantes/Colors";
 import { useAuth } from "../hooks/useAuth";
 import { api } from "../services/api";
 import { Loading } from "../components/Loading";
-
+import { useFocusEffect } from "@react-navigation/native";
 import { useFormContext } from "react-hook-form";
 
 import {
@@ -26,6 +26,7 @@ export default function Register() {
     control,
     handleSubmit,
     getValues,
+    reset,
     formState: { errors },
   } = useFormContext<RegisterDataProps>();
 
@@ -34,6 +35,7 @@ export default function Register() {
 
   const emailRef = useRef<TextInput>(null);
   const phoneRef = useRef<TextInput>(null);
+  const passwordRef = useRef<TextInput>(null);
   const passwordConfirmationRef = useRef<TextInput>(null);
 
   const handleState = () => {
@@ -74,6 +76,10 @@ export default function Register() {
     return password === passwordConfirmation || "As senhas devem ser iguais.";
   }
 
+  useEffect(() => {
+    reset(); // Reseta os campos sempre que a tela for carregada
+  }, []);
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Criar sua conta</Text>
@@ -91,7 +97,6 @@ export default function Register() {
         inputProps={{
           placeholder: "Nome",
           onSubmitEditing: () => emailRef.current?.focus(),
-          returnKeyType: "next",
         }}
       />
 
@@ -112,7 +117,7 @@ export default function Register() {
         }}
         inputProps={{
           placeholder: "E-mail",
-          onSubmitEditing: onSubmitEditing,
+          onSubmitEditing: () => phoneRef.current?.focus(),
         }}
       />
 
@@ -133,11 +138,12 @@ export default function Register() {
         }}
         inputProps={{
           placeholder: "Telefone",
-          onSubmitEditing: onSubmitEditing,
+          onSubmitEditing: () => passwordRef.current?.focus(),
         }}
       />
 
       <Input
+        ref={passwordRef}
         icon="key"
         error={errors.password?.message}
         formProps={{
@@ -178,11 +184,19 @@ export default function Register() {
         }}
       />
 
-      <Button
-        title="Finalizar"
-        icon="check"
-        onPress={handleSubmit(onSubmitEditing)}
-      />
+      {loading ? (
+        <TouchableOpacity disabled={loading} style={styles.buttonDisabled}>
+          <Text style={styles.buttonText} disabled={loading}>
+            <Loading />
+          </Text>
+        </TouchableOpacity>
+      ) : (
+        <Button
+          title={"Criar conta"}
+          icon="check"
+          onPress={handleSubmit(onSubmitEditing)}
+        />
+      )}
 
       <View style={styles.textFooter}>
         <Text>Já possui uma conta?{"  "}</Text>

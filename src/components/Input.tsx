@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useEffect } from "react";
 import {
   StyleSheet,
   TextInput,
@@ -9,7 +9,11 @@ import {
 
 import { Feather } from "@expo/vector-icons";
 
-import { Controller, UseControllerProps } from "react-hook-form";
+import {
+  Controller,
+  UseControllerProps,
+  useFormContext,
+} from "react-hook-form";
 
 import Colors from "../contantes/Colors";
 
@@ -24,6 +28,11 @@ type Props = {
 
 const Input = forwardRef<TextInput, Props>(
   ({ icon, formProps, inputProps, error = "" }, ref) => {
+    const { reset } = useFormContext<RegisterDataProps>();
+
+    useEffect(() => {
+      reset();
+    }, []);
     return (
       <Controller
         render={({ field }) => (
