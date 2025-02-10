@@ -1,5 +1,13 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, Alert } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Modal,
+  Alert,
+} from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { api } from "../services/api";
 import Colors from "../contantes/Colors";
@@ -14,7 +22,6 @@ export default function Events() {
   const [participants, setParticipants] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
 
- 
   const fetchEvents = useCallback(async () => {
     try {
       const response = await api.get("eventos/futuros");
@@ -27,14 +34,12 @@ export default function Events() {
     }
   }, []);
 
-  
   useFocusEffect(
     useCallback(() => {
       fetchEvents();
     }, [fetchEvents])
   );
 
-  
   useEffect(() => {
     const intervalId = setInterval(() => {
       fetchEvents();
@@ -42,18 +47,19 @@ export default function Events() {
     return () => clearInterval(intervalId);
   }, [fetchEvents]);
 
-
   const handleAttendance = async (evento_id, status) => {
     try {
-    
-      await api.patch(`eventos/${evento_id}/participantes/status`, {
-        usuario_id: user.id,
+      await api.put(`eventos/${evento_id}/participantes/${user.id}/status`, {
         status,
       });
-      Alert.alert("Sucesso", `Presença ${status === 'CONFIRMADO' ? "confirmada" : "recusada"} no evento!`);
+      Alert.alert(
+        "Sucesso",
+        `Presença ${
+          status === "CONFIRMADO" ? "confirmada" : "recusada"
+        } no evento!`
+      );
       fetchEvents();
     } catch (error) {
-
       try {
         await api.post(`eventos/${evento_id}/participantes`, {
           usuario_id: user.id,
@@ -62,16 +68,23 @@ export default function Events() {
           usuario_id: user.id,
           status,
         });
-        Alert.alert("Sucesso", `Presença ${status === 'CONFIRMADO' ? "confirmada" : "recusada"} no evento!`);
+        Alert.alert(
+          "Sucesso",
+          `Presença ${
+            status === "CONFIRMADO" ? "confirmada" : "recusada"
+          } no evento!`
+        );
         fetchEvents();
       } catch (err) {
-        Alert.alert("Erro", "Não foi possível atualizar sua presença no evento.");
+        Alert.alert(
+          "Erro",
+          "Não foi possível atualizar sua presença no evento."
+        );
         console.error(err.message);
       }
     }
   };
 
- 
   const fetchParticipants = async (evento_id) => {
     try {
       const response = await api.get(`eventos/${evento_id}/participantes`);
@@ -95,13 +108,13 @@ export default function Events() {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.attendanceButton}
-          onPress={() => handleAttendance(item.id, 'CONFIRMADO')}
+          onPress={() => handleAttendance(item.id, "CONFIRMADO")}
         >
           <Text style={styles.attendanceButtonText}>Confirmar Presença</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.attendanceButton, styles.declineButton]}
-          onPress={() => handleAttendance(item.id, 'RECUSADO')}
+          onPress={() => handleAttendance(item.id, "RECUSADO")}
         >
           <Text style={styles.attendanceButtonText}>Recusar Presença</Text>
         </TouchableOpacity>
@@ -138,7 +151,7 @@ export default function Events() {
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
       />
-      
+
       <TouchableOpacity style={styles.refreshButton} onPress={fetchEvents}>
         <Text style={styles.refreshButtonText}>Atualizar Eventos</Text>
       </TouchableOpacity>
@@ -151,11 +164,15 @@ export default function Events() {
               data={participants}
               keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => (
-               
-                <Text style={styles.participantName}>{item.nome || `Usuário ${item.usuario_id}`}</Text>
+                <Text style={styles.participantName}>
+                  {item.nome || `Usuário ${item.usuario_id}`}
+                </Text>
               )}
             />
-            <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setModalVisible(false)}
+            >
               <Text style={styles.closeButtonText}>Fechar</Text>
             </TouchableOpacity>
           </View>
@@ -281,4 +298,3 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
-
