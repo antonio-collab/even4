@@ -5,7 +5,6 @@ import Colors from "../contantes/Colors";
 import { useAuth } from "../hooks/useAuth";
 import { api } from "../services/api";
 import { Loading } from "../components/Loading";
-import { useFocusEffect } from "@react-navigation/native";
 import { useFormContext } from "react-hook-form";
 
 import {
@@ -26,7 +25,6 @@ export default function Register() {
     control,
     handleSubmit,
     getValues,
-    reset,
     formState: { errors },
   } = useFormContext<RegisterDataProps>();
 
@@ -75,10 +73,6 @@ export default function Register() {
 
     return password === passwordConfirmation || "As senhas devem ser iguais.";
   }
-
-  useEffect(() => {
-    reset(); // Reseta os campos sempre que a tela for carregada
-  }, []);
 
   return (
     <View style={styles.container}>
