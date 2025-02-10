@@ -1,12 +1,14 @@
-import Routes from "./routes/index"
-import { AuthProvider } from "./context/AuthContext"
+import Routes from "./src/routes/index";
+import "@/global.css";
+import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
+import { AuthProvider } from "./src/context/AuthContext";
 
 export default function App() {
-  return(
-
-    <AuthProvider>
-      <Routes/>
+  return (
+    <GluestackUIProvider mode="light">
+      <AuthProvider>
+        <Routes />
       </AuthProvider>
-  )  
-
+    </GluestackUIProvider>
+  );
 }

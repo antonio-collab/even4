@@ -13,7 +13,6 @@ type AuthRoutes = {
   home: undefined;
 };
 
-
 export type AuthNavigatorRoutesProps = NativeStackNavigationProp<AuthRoutes>;
 
 const { Navigator, Screen } = createNativeStackNavigator<AuthRoutes>();
@@ -21,15 +20,19 @@ const { Navigator, Screen } = createNativeStackNavigator<AuthRoutes>();
 export default function PublicRoutes() {
   return (
     <Navigator screenOptions={{ headerShown: true }}>
-      <Screen name="home" component={Home} options={{headerShown: false}}/>
-      <Screen name="login" component={Login} options={{
-          headerTitle: "", 
-        }}/>
+      <Screen name="home" component={Home} options={{ headerShown: false }} />
+      <Screen
+        name="login"
+        component={Login}
+        options={{
+          headerTitle: "",
+        }}
+      />
       <Screen
         name="register"
         component={Register}
         options={{
-          headerTitle: "", 
+          headerTitle: "",
         }}
       />
     </Navigator>

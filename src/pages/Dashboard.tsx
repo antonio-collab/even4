@@ -41,7 +41,7 @@ export default function Dashboard() {
 
       <View style={styles.cardCalender}>
         <Image
-          source={require("../assets/Calendar Icon.png")}
+          source={require("../assets/calendar.png")}
           style={styles.image}
         />
         <Text style={styles.TextCalen}>
