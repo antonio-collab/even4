@@ -16,16 +16,37 @@ import { useAuth } from "../hooks/useAuth";
 
 export default function Events() {
   const { user } = useAuth();
-  const [events, setEvents] = useState([]);
+  const [todayEvents, setTodayEvents] = useState([]);
+  const [futureEvents, setFutureEvents] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [participants, setParticipants] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
 
+  // Estados para controlar a visibilidade dos eventos
+  const [showTodayEvents, setShowTodayEvents] = useState(false);
+  const [showFutureEvents, setShowFutureEvents] = useState(false);
+
   const fetchEvents = useCallback(async () => {
     try {
-      const response = await api.get("eventos/futuros");
-      setEvents(response.data);
+      const response = await api.get("eventos");
+      const events = response.data;
+
+      const today = new Date().toISOString().split("T")[0];
+      console.log({ today });
+
+      const eventsToday = events.filter((event) => {
+        const eventDate = event.data.split("T")[0];
+        return eventDate === today;
+      });
+      setTodayEvents(eventsToday);
+
+      const futureEvents = events.filter((event) => {
+        const eventDate = event.data.split("T")[0];
+        return eventDate > today;
+      });
+      setFutureEvents(futureEvents);
     } catch (err) {
       setError("Erro ao carregar eventos. Tente novamente mais tarde.");
       console.error(err.message);
@@ -143,14 +164,40 @@ export default function Events() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Eventos</Text>
-      <FlatList
-        data={events}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderEventItem}
-        contentContainerStyle={styles.listContainer}
-        showsVerticalScrollIndicator={false}
-      />
+      <TouchableOpacity
+        style={styles.sectionHeader}
+        onPress={() => setShowTodayEvents(!showTodayEvents)}
+      >
+        <Text style={styles.title}>Eventos Hoje</Text>
+        <Text style={styles.toggleIcon}>{showTodayEvents ? "▲" : "▼"}</Text>
+      </TouchableOpacity>
+      {showTodayEvents && (
+        <FlatList
+          data={todayEvents}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderEventItem}
+          contentContainerStyle={styles.listContainer}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={() => <Text>Nenhum evento para hoje!</Text>}
+        />
+      )}
+
+      <TouchableOpacity
+        style={styles.sectionHeader}
+        onPress={() => setShowFutureEvents(!showFutureEvents)}
+      >
+        <Text style={styles.title}>Próximos Eventos</Text>
+        <Text style={styles.toggleIcon}>{showFutureEvents ? "▲" : "▼"}</Text>
+      </TouchableOpacity>
+      {showFutureEvents && (
+        <FlatList
+          data={futureEvents}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderEventItem}
+          contentContainerStyle={styles.listContainer}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
 
       <TouchableOpacity style={styles.refreshButton} onPress={fetchEvents}>
         <Text style={styles.refreshButtonText}>Atualizar Eventos</Text>
@@ -182,17 +229,26 @@ export default function Events() {
   );
 }
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.white,
     padding: 16,
   },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     color: Colors.black,
-    marginBottom: 16,
+  },
+  toggleIcon: {
+    fontSize: 18,
+    color: Colors.black,
   },
   listContainer: {
     paddingBottom: 16,

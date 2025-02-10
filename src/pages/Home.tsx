@@ -16,6 +16,11 @@ type NavigationProps = NativeStackNavigationProp<PublicStackParamList, "home">;
 export default function Home() {
   const navigation = useNavigation<NavigationProps>();
 
+  const handleGetAllEvents = () => {
+    try {
+    } catch (error) {}
+  };
+
   return (
     <View style={styles.container}>
       <Svg height="100" width="300">

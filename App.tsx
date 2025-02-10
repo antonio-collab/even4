@@ -1,14 +1,13 @@
 import Routes from "./src/routes/index";
 import "@/global.css";
-import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import { AuthProvider } from "./src/context/AuthContext";
+import React from "react";
+import { View } from "react-native";
 
 export default function App() {
   return (
-    <GluestackUIProvider mode="light">
-      <AuthProvider>
-        <Routes />
-      </AuthProvider>
-    </GluestackUIProvider>
+    <AuthProvider>
+      <Routes />
+    </AuthProvider>
   );
 }

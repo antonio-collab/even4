@@ -8,17 +8,24 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import Colors from "../contantes/Colors";
 import React from "react";
 import { useAuth } from "../hooks/useAuth";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "../routes/protected.routes";
+import { api } from "../services/api";
 
 export default function Dashboard() {
   const { user } = useAuth();
 
   const navigation = useNavigation<AppNavigatorRoutesProps>();
+
+  async function handleGetAllEvents() {
+    const response = await api.get("eventos");
+
+    console.log(response.data);
+  }
 
   return (
     <View style={styles.container}>

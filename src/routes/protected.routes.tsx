@@ -29,7 +29,7 @@ export default function ProtectedRoutes() {
   return (
     <Navigator
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
         tabBarShowLabel: false,
         tabBarStyle: {
           height: 70,
@@ -43,6 +43,7 @@ export default function ProtectedRoutes() {
         name="dashboard"
         component={Dashboard}
         options={{
+          headerShown: false,
           tabBarIcon: ({ focused, color }) => (
             <View style={{ alignItems: "center", width: 200 }}>
               <Feather
@@ -69,6 +70,7 @@ export default function ProtectedRoutes() {
         name="events"
         component={Events}
         options={{
+          headerTitle: "Meus eventos",
           tabBarIcon: ({ focused, color }) => (
             <View style={{ alignItems: "center", width: 200 }}>
               <Feather
@@ -85,7 +87,7 @@ export default function ProtectedRoutes() {
                   textAlign: "center",
                 }}
               >
-                Eventos
+                Meus eventos
               </Text>
             </View>
           ),
@@ -95,6 +97,7 @@ export default function ProtectedRoutes() {
         name="createEvent"
         component={CreateEvent}
         options={{
+          headerShown: false,
           tabBarIcon: ({ focused, color }) => (
             <View style={{ alignItems: "center", width: 200 }}>
               <Feather
@@ -111,7 +114,7 @@ export default function ProtectedRoutes() {
                   textAlign: "center",
                 }}
               >
-                Criar eventos
+                Criar evento
               </Text>
             </View>
           ),
@@ -121,6 +124,7 @@ export default function ProtectedRoutes() {
         name="profile"
         component={Profile}
         options={{
+          headerTitle: "Meu perfil",
           tabBarIcon: ({ focused, color }) => (
             <View style={{ alignItems: "center", width: 200 }}>
               <Feather
