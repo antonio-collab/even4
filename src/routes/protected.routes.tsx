@@ -71,6 +71,9 @@ export default function ProtectedRoutes() {
         component={Events}
         options={{
           headerTitle: "Meus eventos",
+          headerTitleAlign: "center",
+          headerTintColor: "#F0534F",
+          headerTitleStyle: { fontSize: 24, fontWeight: 700 },
           tabBarIcon: ({ focused, color }) => (
             <View style={{ alignItems: "center", width: 200 }}>
               <Feather
@@ -97,7 +100,11 @@ export default function ProtectedRoutes() {
         name="createEvent"
         component={CreateEvent}
         options={{
-          headerShown: false,
+          headerShown: true,
+          headerTitle: "Criar Evento",
+          headerTitleAlign: "center",
+          headerTintColor: "#F0534F",
+          headerTitleStyle: { fontSize: 24, fontWeight: 700 },
           tabBarIcon: ({ focused, color }) => (
             <View style={{ alignItems: "center", width: 200 }}>
               <Feather
@@ -125,6 +132,9 @@ export default function ProtectedRoutes() {
         component={Profile}
         options={{
           headerTitle: "Meu perfil",
+          headerTitleAlign: "center",
+          headerTintColor: "#F0534F",
+          headerTitleStyle: { fontSize: 24, fontWeight: 700 },
           tabBarIcon: ({ focused, color }) => (
             <View style={{ alignItems: "center", width: 200 }}>
               <Feather

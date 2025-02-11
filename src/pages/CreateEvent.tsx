@@ -1,12 +1,19 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import Colors from "../contantes/Colors";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useNavigation } from "@react-navigation/native";
 import { api } from "../services/api";
 import { Loading } from "../components/Loading";
 import { AppNavigatorRoutesProps } from "../routes/protected.routes";
-import Map from "../components/Map"; 
+import Map from "../components/Map";
 
 interface Local {
   endereco: string;
@@ -30,12 +37,11 @@ export default function CreateEvent() {
     latitude: null as number | null,
     longitude: null as number | null,
   });
-  
+
   const handleChange = (key: string, value: any) => {
     console.log(`✏ Atualizando campo: ${key} ->`, value);
     setEvent((prev) => ({ ...prev, [key]: value }));
   };
-  
 
   const handleLocationSelected = (local: Local) => {
     console.log("📍 Localização selecionada:", local);
@@ -46,36 +52,35 @@ export default function CreateEvent() {
       longitude: local.longitude ?? null,
     }));
   };
-  
 
   const handleCreateEvent = async () => {
     if (!event.nome || !event.data || !event.hora || !event.descricao) {
       Alert.alert("Erro", "Preencha todos os campos obrigatórios!");
       return;
     }
-  
-    console.log("📌 Dados do evento antes do envio:", event); 
-  
+
+    console.log("📌 Dados do evento antes do envio:", event);
+
     try {
       setLoading(true);
       const response = await api.post("eventos", event);
       console.log("✅ Resposta da API:", response.data);
-  
+
       Alert.alert("Evento criado com sucesso!");
       navigation.navigate("events");
     } catch (error) {
-      console.log("❌ Erro ao criar evento:", error.response?.data || error.message);
+      console.log(
+        "❌ Erro ao criar evento:",
+        error.response?.data || error.message
+      );
       Alert.alert("Erro ao criar evento! Tente novamente.");
     } finally {
       setLoading(false);
     }
   };
-  
-  
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Criar Evento</Text>
-
       <TextInput
         style={styles.input}
         placeholder="Nome do Evento"
@@ -83,8 +88,10 @@ export default function CreateEvent() {
         onChangeText={(text) => handleChange("nome", text)}
       />
 
-
-      <TouchableOpacity style={styles.input} onPress={() => setShowDatePicker(true)}>
+      <TouchableOpacity
+        style={styles.input}
+        onPress={() => setShowDatePicker(true)}
+      >
         <Text>{event.data || "Selecionar Data"}</Text>
       </TouchableOpacity>
       {showDatePicker && (
@@ -93,13 +100,16 @@ export default function CreateEvent() {
           mode="date"
           display="default"
           onChange={(e, d) => {
-            setShowDatePicker(false); 
-            if (d) handleChange("data", d.toISOString().split("T")[0]); 
+            setShowDatePicker(false);
+            if (d) handleChange("data", d.toISOString().split("T")[0]);
           }}
         />
       )}
 
-      <TouchableOpacity style={styles.input} onPress={() => setShowTimePicker(true)}>
+      <TouchableOpacity
+        style={styles.input}
+        onPress={() => setShowTimePicker(true)}
+      >
         <Text>{event.hora || "Selecionar Hora"}</Text>
       </TouchableOpacity>
       {showTimePicker && (
@@ -110,14 +120,16 @@ export default function CreateEvent() {
           onChange={(e, t) => {
             setShowTimePicker(false);
             if (t) {
-              const formattedTime = t.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", hour12: false });
+              const formattedTime = t.toLocaleTimeString("pt-BR", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+              });
               handleChange("hora", formattedTime);
             }
           }}
-          
         />
       )}
-
 
       <TextInput
         style={[styles.input, styles.textArea]}
@@ -134,7 +146,9 @@ export default function CreateEvent() {
         onPress={handleCreateEvent}
         disabled={loading}
       >
-        <Text style={styles.buttonText}>{loading ? <Loading /> : "Criar Evento"}</Text>
+        <Text style={styles.buttonText}>
+          {loading ? <Loading /> : "Criar Evento"}
+        </Text>
       </TouchableOpacity>
     </View>
   );
