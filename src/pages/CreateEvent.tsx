@@ -1,162 +1,140 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from "react-native";
 import Colors from "../contantes/Colors";
-
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Platform } from "react-native";
-
+import { useNavigation } from "@react-navigation/native";
 import { api } from "../services/api";
 import { Loading } from "../components/Loading";
-import { useNavigation } from "@react-navigation/native";
 import { AppNavigatorRoutesProps } from "../routes/protected.routes";
+import Map from "../components/Map"; 
+
+interface Local {
+  endereco: string;
+  latitude: number;
+  longitude: number;
+}
 
 export default function CreateEvent() {
   const [loading, setLoading] = useState(false);
+  const [date, setDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const navigation = useNavigation<AppNavigatorRoutesProps>();
+
   const [event, setEvent] = useState({
     nome: "",
     data: "",
     hora: "",
     descricao: "",
     endereco: "",
-    local_id: 1,
+    latitude: null as number | null,
+    longitude: null as number | null,
   });
+  
+  const handleChange = (key: string, value: any) => {
+    console.log(`✏ Atualizando campo: ${key} ->`, value);
+    setEvent((prev) => ({ ...prev, [key]: value }));
+  };
+  
 
-  const [date, setDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
+  const handleLocationSelected = (local: Local) => {
+    console.log("📍 Localização selecionada:", local);
+    setEvent((prev) => ({
+      ...prev,
+      endereco: local.endereco,
+      latitude: local.latitude ?? null,
+      longitude: local.longitude ?? null,
+    }));
+  };
+  
 
-  const navigation = useNavigation<AppNavigatorRoutesProps>();
-
-  function handleChange(key, value) {
-    setEvent({ ...event, [key]: value });
-  }
-
-  async function handleCreateEvent() {
+  const handleCreateEvent = async () => {
+    if (!event.nome || !event.data || !event.hora || !event.descricao) {
+      Alert.alert("Erro", "Preencha todos os campos obrigatórios!");
+      return;
+    }
+  
+    console.log("📌 Dados do evento antes do envio:", event); 
+  
     try {
       setLoading(true);
-      await api.post("eventos", {
-        nome: event.nome,
-        data: event.data,
-        hora: event.hora,
-        descricao: event.descricao,
-        local_id: 1,
-      });
+      const response = await api.post("eventos", event);
+      console.log("✅ Resposta da API:", response.data);
+  
       Alert.alert("Evento criado com sucesso!");
-      setEvent({
-        nome: "",
-        data: "",
-        hora: "",
-        descricao: "",
-        endereco: "",
-        local_id: 1,
-      });
       navigation.navigate("events");
     } catch (error) {
-      Alert.alert("Erro ao criar evento! Tente novamente mais tarde!");
-      console.log(error.message);
+      console.log("❌ Erro ao criar evento:", error.response?.data || error.message);
+      Alert.alert("Erro ao criar evento! Tente novamente.");
     } finally {
       setLoading(false);
     }
-  }
-
-  function handleDateChange(event, selectedDate) {
-    setShowDatePicker(false);
-    if (selectedDate) {
-      setDate(selectedDate);
-      handleChange("data", selectedDate.toISOString().split("T")[0]);
-    }
-  }
-
-  function handleTimeChange(event, selectedTime) {
-    setShowTimePicker(false);
-    if (selectedTime) {
-      const hours = selectedTime.getHours().toString().padStart(2, "0");
-      const minutes = selectedTime.getMinutes().toString().padStart(2, "0");
-      handleChange("hora", `${hours}:${minutes}`);
-    }
-  }
-
+  };
+  
+  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Criar Evento</Text>
+
       <TextInput
         style={styles.input}
         placeholder="Nome do Evento"
-        placeholderTextColor={Colors.gray}
         value={event.nome}
         onChangeText={(text) => handleChange("nome", text)}
       />
-      <TouchableOpacity
-        style={styles.input}
-        onPress={() => setShowDatePicker(true)}
-      >
-        <Text style={{ color: event.data ? Colors.black : Colors.gray }}>
-          {event.data
-            ? `${event.data.split("-")[2]}/${event.data.split("-")[1]}/${
-                event.data.split("-")[0]
-              }`
-            : "Selecionar Data"}
-        </Text>
-      </TouchableOpacity>
 
+
+      <TouchableOpacity style={styles.input} onPress={() => setShowDatePicker(true)}>
+        <Text>{event.data || "Selecionar Data"}</Text>
+      </TouchableOpacity>
       {showDatePicker && (
         <DateTimePicker
           value={date}
           mode="date"
-          display={Platform.OS === "ios" ? "inline" : "default"}
-          onChange={handleDateChange}
+          display="default"
+          onChange={(e, d) => {
+            setShowDatePicker(false); 
+            if (d) handleChange("data", d.toISOString().split("T")[0]); 
+          }}
         />
       )}
 
-      <TouchableOpacity
-        style={styles.input}
-        onPress={() => setShowTimePicker(true)}
-      >
-        <Text style={{ color: event.hora ? Colors.black : Colors.gray }}>
-          {event.hora || "Selecionar Hora"}
-        </Text>
+      <TouchableOpacity style={styles.input} onPress={() => setShowTimePicker(true)}>
+        <Text>{event.hora || "Selecionar Hora"}</Text>
       </TouchableOpacity>
-
       {showTimePicker && (
         <DateTimePicker
           value={date}
           mode="time"
-          display={Platform.OS === "ios" ? "inline" : "default"}
-          onChange={handleTimeChange}
+          display="default"
+          onChange={(e, t) => {
+            setShowTimePicker(false);
+            if (t) {
+              const formattedTime = t.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", hour12: false });
+              handleChange("hora", formattedTime);
+            }
+          }}
+          
         />
       )}
 
-      <TextInput
-        style={[styles.input, styles.textArea]}
-        placeholder="Endereço"
-        placeholderTextColor={Colors.gray}
-        value={event.endereco}
-        onChangeText={(text) => handleChange("endereco", text)}
-        multiline
-      />
 
       <TextInput
         style={[styles.input, styles.textArea]}
         placeholder="Descrição do Evento"
-        placeholderTextColor={Colors.gray}
         value={event.descricao}
         onChangeText={(text) => handleChange("descricao", text)}
         multiline
       />
+
+      <Map onLocationSelected={handleLocationSelected} />
+
       <TouchableOpacity
         style={loading ? styles.buttonDisabled : styles.button}
         onPress={handleCreateEvent}
+        disabled={loading}
       >
-        <Text style={styles.buttonText} disabled={loading}>
-          {loading ? <Loading /> : "Criar Evento"}
-        </Text>
+        <Text style={styles.buttonText}>{loading ? <Loading /> : "Criar Evento"}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -196,17 +174,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonDisabled: {
-    backgroundColor: Colors.salmonWhite,
-    paddingTop: 14,
-    paddingBottom: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
+    backgroundColor: Colors.gray,
+    padding: 15,
     borderRadius: 8,
+    alignItems: "center",
   },
   buttonText: {
     color: Colors.white,
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: 16,
   },
 });
