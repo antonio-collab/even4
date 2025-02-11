@@ -52,7 +52,7 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Criar sua conta</Text>
+      <Text style={styles.header}>Login</Text>
 
       <Input
         icon="mail"
@@ -104,7 +104,7 @@ export default function Login() {
         </TouchableOpacity>
       ) : (
         <Button
-          title={"Criar conta"}
+          title={"Entrar"}
           icon="check"
           onPress={handleSubmit(onSubmitEditing)}
         />

@@ -52,7 +52,7 @@ export default function Dashboard() {
           style={styles.image}
         />
         <Text style={styles.TextCalen}>
-          Seu calendário de eventos é uma tela em branco. Use Event4 para
+          Seu calendário de eventos é uma tela em branco. Use Event Find para
           encontrar momentos memoráveis.
         </Text>
       </View>
