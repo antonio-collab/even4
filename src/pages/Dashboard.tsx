@@ -13,6 +13,9 @@ import { api } from "../services/api";
 import Colors from "../contantes/Colors";
 import { Loading } from "../components/Loading";
 import { useAuth } from "../hooks/useAuth";
+import { Button } from "../components/Button";
+
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -68,41 +71,62 @@ export default function Dashboard() {
   }, [fetchEvents]);
 
   const handleAttendance = async (evento_id, status) => {
-    try {
-      await api.put(`eventos/${evento_id}/participantes/${user.id}/status`, {
-        status,
-      });
-      Alert.alert(
-        "Sucesso",
-        `Presença ${
-          status === "CONFIRMADO" ? "confirmada" : "recusada"
-        } no evento!`
-      );
-      fetchEvents();
-    } catch (error) {
-      try {
-        await api.post(`eventos/${evento_id}/participantes`, {
-          usuario_id: user.id,
-        });
-        await api.patch(`eventos/${evento_id}/participantes/status`, {
-          usuario_id: user.id,
-          status,
-        });
-        Alert.alert(
-          "Sucesso",
-          `Presença ${
-            status === "CONFIRMADO" ? "confirmada" : "recusada"
-          } no evento!`
-        );
-        fetchEvents();
-      } catch (err) {
-        Alert.alert(
-          "Erro",
-          "Não foi possível atualizar sua presença no evento."
-        );
-        console.error(err.message);
-      }
-    }
+    Alert.alert(
+      "Confirmação",
+      `Tem certeza que deseja ${
+        status === "CONFIRMADO" ? "confirmar" : "recusar"
+      } sua presença no evento?`,
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Sim",
+          onPress: async () => {
+            try {
+              await api.put(
+                `eventos/${evento_id}/participantes/${user.id}/status`,
+                {
+                  status,
+                }
+              );
+              Alert.alert(
+                "Sucesso",
+                `Presença ${
+                  status === "CONFIRMADO" ? "confirmada" : "recusada"
+                } no evento!`
+              );
+              fetchEvents();
+            } catch (error) {
+              try {
+                await api.post(`eventos/${evento_id}/participantes`, {
+                  usuario_id: user.id,
+                });
+                await api.patch(`eventos/${evento_id}/participantes/status`, {
+                  usuario_id: user.id,
+                  status,
+                });
+                Alert.alert(
+                  "Sucesso",
+                  `Presença ${
+                    status === "CONFIRMADO" ? "confirmada" : "recusada"
+                  } no evento!`
+                );
+                fetchEvents();
+              } catch (err) {
+                Alert.alert(
+                  "Erro",
+                  "Não foi possível atualizar sua presença no evento."
+                );
+                console.error(err.message);
+              }
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   const fetchParticipants = async (evento_id) => {
@@ -118,31 +142,57 @@ export default function Dashboard() {
 
   const renderEventItem = ({ item }) => (
     <View style={styles.eventItem}>
-      <Text style={styles.eventName}>{item.nome}</Text>
-      <Text style={styles.eventDate}>
-        {new Date(item.data).toLocaleDateString()} - {item.hora}
-      </Text>
-      <Text style={styles.eventDescription}>{item.descricao}</Text>
-      <Text style={styles.eventAddress}>{item.endereco}</Text>
-
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.attendanceButton}
-          onPress={() => handleAttendance(item.id, "CONFIRMADO")}
+      <View style={styles.header}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 5,
+          }}
         >
-          <Text style={styles.attendanceButtonText}>Confirmar Presença</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.attendanceButton, styles.declineButton]}
-          onPress={() => handleAttendance(item.id, "RECUSADO")}
-        >
-          <Text style={styles.attendanceButtonText}>Recusar Presença</Text>
-        </TouchableOpacity>
+          <Ionicons name="megaphone" size={24} color={Colors.green} />
+          <Text style={styles.eventName}>{item.nome}</Text>
+        </View>
       </View>
 
-      <TouchableOpacity onPress={() => fetchParticipants(item.id)}>
-        <Text style={styles.participantText}>Ver Participantes</Text>
-      </TouchableOpacity>
+      <View style={styles.row}>
+        <Ionicons name="calendar" size={20} color={Colors.Textgray} />
+        <Text style={styles.eventDate}>
+          {new Date(item.data).toLocaleDateString()} - {item.hora}
+        </Text>
+      </View>
+
+      <View style={styles.row}>
+        <Ionicons name="information-circle" size={20} color={Colors.Textgray} />
+        <Text style={styles.eventDescription}>{item.descricao}</Text>
+      </View>
+
+      <View style={styles.row}>
+        <Ionicons name="location" size={20} color={Colors.salmon} />
+
+        <Text style={styles.eventAddress}>{item.endereco}</Text>
+      </View>
+
+      <View style={styles.rowButtons}>
+        <Button
+          icon="check"
+          title="Confirmar"
+          variant="secondary"
+          onPress={() => handleAttendance(item.id, "CONFIRMADO")}
+        />
+        <Button
+          icon="x"
+          title="Recusar"
+          onPress={() => handleAttendance(item.id, "RECUSADO")}
+        />
+      </View>
+      <Button
+        icon="eye"
+        title="Ver Participantes"
+        variant="tertiary"
+        onPress={() => fetchParticipants(item.id)}
+      />
     </View>
   );
 
@@ -195,6 +245,7 @@ export default function Dashboard() {
           renderItem={renderEventItem}
           contentContainerStyle={styles.listContainer}
           showsVerticalScrollIndicator={false}
+          ListEmptyComponent={() => <Text>Nenhum evento próximo!</Text>}
         />
       )}
 
@@ -254,26 +305,54 @@ export const styles = StyleSheet.create({
   },
   eventItem: {
     backgroundColor: Colors.salmonWhite,
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 12,
+    padding: 18,
+    borderRadius: 10,
+    marginBottom: 14,
+    shadowColor: Colors.black,
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    gap: 10,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 8,
+    marginBottom: 6,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  rowButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: 6,
   },
   eventName: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
     color: Colors.black,
   },
   eventDate: {
-    fontSize: 14,
+    fontSize: 16,
     color: Colors.Textgray,
   },
   eventDescription: {
-    fontSize: 14,
+    fontSize: 16,
+    textAlign: "justify",
     color: Colors.black,
+    paddingRight: 18,
   },
   eventAddress: {
-    fontSize: 14,
-    color: Colors.gray,
+    fontSize: 16,
+    color: Colors.salmon,
+    fontWeight: "bold",
+    textAlign: "justify",
+    paddingRight: 18,
   },
   buttonContainer: {
     flexDirection: "row",

@@ -33,7 +33,7 @@ export default function Events() {
 
   const fetchEvents = useCallback(async () => {
     try {
-      const response = await api.get("eventos");
+      const response = await api.get("eventos/futuros");
       const events = response.data;
 
       const today = new Date().toISOString().split("T")[0];
@@ -228,6 +228,7 @@ export default function Events() {
           renderItem={renderEventItem}
           contentContainerStyle={styles.listContainer}
           showsVerticalScrollIndicator={false}
+          ListEmptyComponent={() => <Text>Nenhum evento próximo!</Text>}
         />
       )}
 
