@@ -1,7 +1,6 @@
 import React from "react";
 import { Text, View } from "react-native";
 
-import { BottomTabNavigationOptions } from "@react-navigation/bottom-tabs";
 import {
   BottomTabNavigationProp,
   createBottomTabNavigator,
@@ -10,24 +9,34 @@ import {
 import { Feather } from "@expo/vector-icons";
 
 import Events from "../pages/Events";
-import CreateEvent from "../pages/CreateEvent";
-import Dashboard from "../pages/Dashboard";
 import Profile from "../pages/Profile";
+import Dashboard from "../pages/Dashboard";
+import CreateEvent from "../pages/CreateEvent";
+import { AddParticipants } from "../pages/AddParticipants";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 type AppRoutes = {
   dashboard: undefined;
   events: undefined;
   createEvent: undefined;
   profile: undefined;
+  addParticipants: { eventId: string };
+};
+
+type RootStackParamList = {
+  MainTabs: undefined;
+  addParticipants: { eventId: string };
 };
 
 export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>;
 
-const { Navigator, Screen } = createBottomTabNavigator<AppRoutes>();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export default function ProtectedRoutes() {
+const Tab = createBottomTabNavigator<AppRoutes>();
+
+function BottomTabNavigator() {
   return (
-    <Navigator
+    <Tab.Navigator
       screenOptions={{
         headerShown: true,
         tabBarShowLabel: false,
@@ -39,11 +48,15 @@ export default function ProtectedRoutes() {
         },
       }}
     >
-      <Screen
+      <Tab.Screen
         name="dashboard"
         component={Dashboard}
         options={{
-          headerShown: false,
+          headerShown: true,
+          headerTitle: "Event4",
+          headerTitleAlign: "center",
+          headerTintColor: "#F0534F",
+          headerTitleStyle: { fontSize: 24, fontWeight: 700 },
           tabBarIcon: ({ focused, color }) => (
             <View style={{ alignItems: "center", width: 200 }}>
               <Feather
@@ -66,7 +79,7 @@ export default function ProtectedRoutes() {
           ),
         }}
       />
-      <Screen
+      <Tab.Screen
         name="events"
         component={Events}
         options={{
@@ -96,7 +109,7 @@ export default function ProtectedRoutes() {
           ),
         }}
       />
-      <Screen
+      <Tab.Screen
         name="createEvent"
         component={CreateEvent}
         options={{
@@ -127,7 +140,7 @@ export default function ProtectedRoutes() {
           ),
         }}
       />
-      <Screen
+      <Tab.Screen
         name="profile"
         component={Profile}
         options={{
@@ -157,6 +170,25 @@ export default function ProtectedRoutes() {
           ),
         }}
       />
-    </Navigator>
+    </Tab.Navigator>
+  );
+}
+
+export default function ProtectedRoutes() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="MainTabs" component={BottomTabNavigator} />
+      <Stack.Screen
+        name="addParticipants"
+        component={AddParticipants}
+        options={{
+          headerShown: true,
+          headerTitle: "Adicionar participantes",
+          headerTitleAlign: "center",
+          headerTintColor: "#F0534F",
+          headerTitleStyle: { fontSize: 24, fontWeight: 700 },
+        }}
+      />
+    </Stack.Navigator>
   );
 }

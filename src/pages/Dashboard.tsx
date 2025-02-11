@@ -1,128 +1,355 @@
+import React, { useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  TextInput,
-  Pressable,
-  Button,
+  FlatList,
   TouchableOpacity,
-  Image,
+  Modal,
+  Alert,
 } from "react-native";
-import { useCallback, useState } from "react";
-import Colors from "../contantes/Colors";
-import React from "react";
-import { useAuth } from "../hooks/useAuth";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import { AppNavigatorRoutesProps } from "../routes/protected.routes";
+import { useFocusEffect } from "@react-navigation/native";
 import { api } from "../services/api";
+import Colors from "../contantes/Colors";
+import { Loading } from "../components/Loading";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const [todayEvents, setTodayEvents] = useState([]);
+  const [futureEvents, setFutureEvents] = useState([]);
 
-  const navigation = useNavigation<AppNavigatorRoutesProps>();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [participants, setParticipants] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
 
-  async function handleGetAllEvents() {
-    const response = await api.get("eventos");
+  const [showTodayEvents, setShowTodayEvents] = useState(false);
+  const [showFutureEvents, setShowFutureEvents] = useState(false);
 
-    console.log(response.data);
+  const fetchEvents = useCallback(async () => {
+    try {
+      const response = await api.get("eventos");
+      const events = response.data;
+
+      const today = new Date().toISOString().split("T")[0];
+      console.log({ today });
+
+      const eventsToday = events.filter((event) => {
+        const eventDate = event.data.split("T")[0];
+        return eventDate === today;
+      });
+      setTodayEvents(eventsToday);
+
+      const futureEvents = events.filter((event) => {
+        const eventDate = event.data.split("T")[0];
+        return eventDate > today;
+      });
+      setFutureEvents(futureEvents);
+    } catch (err) {
+      setError("Erro ao carregar eventos. Tente novamente mais tarde.");
+      console.error(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchEvents();
+    }, [fetchEvents])
+  );
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      fetchEvents();
+    }, 30000);
+    return () => clearInterval(intervalId);
+  }, [fetchEvents]);
+
+  const handleAttendance = async (evento_id, status) => {
+    try {
+      await api.put(`eventos/${evento_id}/participantes/${user.id}/status`, {
+        status,
+      });
+      Alert.alert(
+        "Sucesso",
+        `Presença ${
+          status === "CONFIRMADO" ? "confirmada" : "recusada"
+        } no evento!`
+      );
+      fetchEvents();
+    } catch (error) {
+      try {
+        await api.post(`eventos/${evento_id}/participantes`, {
+          usuario_id: user.id,
+        });
+        await api.patch(`eventos/${evento_id}/participantes/status`, {
+          usuario_id: user.id,
+          status,
+        });
+        Alert.alert(
+          "Sucesso",
+          `Presença ${
+            status === "CONFIRMADO" ? "confirmada" : "recusada"
+          } no evento!`
+        );
+        fetchEvents();
+      } catch (err) {
+        Alert.alert(
+          "Erro",
+          "Não foi possível atualizar sua presença no evento."
+        );
+        console.error(err.message);
+      }
+    }
+  };
+
+  const fetchParticipants = async (evento_id) => {
+    try {
+      const response = await api.get(`eventos/${evento_id}/participantes`);
+      setParticipants(response.data);
+      setModalVisible(true);
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível carregar os participantes.");
+      console.error(error.message);
+    }
+  };
+
+  const renderEventItem = ({ item }) => (
+    <View style={styles.eventItem}>
+      <Text style={styles.eventName}>{item.nome}</Text>
+      <Text style={styles.eventDate}>
+        {new Date(item.data).toLocaleDateString()} - {item.hora}
+      </Text>
+      <Text style={styles.eventDescription}>{item.descricao}</Text>
+      <Text style={styles.eventAddress}>{item.endereco}</Text>
+
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={styles.attendanceButton}
+          onPress={() => handleAttendance(item.id, "CONFIRMADO")}
+        >
+          <Text style={styles.attendanceButtonText}>Confirmar Presença</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.attendanceButton, styles.declineButton]}
+          onPress={() => handleAttendance(item.id, "RECUSADO")}
+        >
+          <Text style={styles.attendanceButtonText}>Recusar Presença</Text>
+        </TouchableOpacity>
+      </View>
+
+      <TouchableOpacity onPress={() => fetchParticipants(item.id)}>
+        <Text style={styles.participantText}>Ver Participantes</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity onPress={fetchEvents}>
+          <Text style={styles.refreshText}>Tentar novamente</Text>
+        </TouchableOpacity>
+      </View>
+    );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.TextUser}>Olá, {user.nome}!</Text>
-
-      <View style={styles.card}>
-        <Text style={styles.TextP}>
-          Agora que está tudo pronto. Vamos tornar seus eventos extraordinários,
-          começando aqui!
-        </Text>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("createEvent")}
-        >
-          <Text style={styles.buttonText}>Planeje seu Evento</Text>
-        </TouchableOpacity>
-      </View>
-
-      <Text style={styles.TextC}>Próximos eventos</Text>
-
-      <View style={styles.cardCalender}>
-        <Image
-          source={require("../assets/calendar.png")}
-          style={styles.image}
+      <TouchableOpacity
+        style={styles.sectionHeader}
+        onPress={() => setShowTodayEvents(!showTodayEvents)}
+      >
+        <Text style={styles.title}>Eventos Hoje</Text>
+        <Text style={styles.toggleIcon}>{showTodayEvents ? "▲" : "▼"}</Text>
+      </TouchableOpacity>
+      {showTodayEvents && (
+        <FlatList
+          data={todayEvents}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderEventItem}
+          contentContainerStyle={styles.listContainer}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={() => <Text>Nenhum evento para hoje!</Text>}
         />
-        <Text style={styles.TextCalen}>
-          Seu calendário de eventos é uma tela em branco. Use Event Find para
-          encontrar momentos memoráveis.
-        </Text>
-      </View>
+      )}
+
+      <TouchableOpacity
+        style={styles.sectionHeader}
+        onPress={() => setShowFutureEvents(!showFutureEvents)}
+      >
+        <Text style={styles.title}>Próximos Eventos</Text>
+        <Text style={styles.toggleIcon}>{showFutureEvents ? "▲" : "▼"}</Text>
+      </TouchableOpacity>
+      {showFutureEvents && (
+        <FlatList
+          data={futureEvents}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderEventItem}
+          contentContainerStyle={styles.listContainer}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
+
+      <TouchableOpacity style={styles.refreshButton} onPress={fetchEvents}>
+        <Text style={styles.refreshButtonText}>Atualizar Eventos</Text>
+      </TouchableOpacity>
+
+      <Modal visible={modalVisible} animationType="slide" transparent={true}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Participantes</Text>
+            <FlatList
+              data={participants}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => (
+                <Text style={styles.participantName}>
+                  {item.nome || `Usuário ${item.usuario_id}`}
+                </Text>
+              )}
+            />
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.closeButtonText}>Fechar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
-const styles = StyleSheet.create({
+
+export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: "column",
     backgroundColor: Colors.white,
-    alignItems: "center",
+    padding: 16,
   },
-  TextUser: {
-    position: "relative",
-    paddingTop: 100,
-    marginRight: 180,
-    fontSize: 30,
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: 24,
     fontWeight: "bold",
+    color: Colors.black,
   },
-  card: {
-    width: 380,
-    height: 185,
+  toggleIcon: {
+    fontSize: 18,
+    color: Colors.black,
+  },
+  listContainer: {
+    paddingBottom: 16,
+  },
+  eventItem: {
     backgroundColor: Colors.salmonWhite,
-    borderRadius: 10,
-    marginHorizontal: 30,
-    marginVertical: 25,
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 12,
   },
-  TextP: {
-    fontSize: 20,
-    padding: 15,
+  eventName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: Colors.black,
   },
-  button: {
-    width: 190,
-    height: 50,
-    backgroundColor: Colors.salmon,
+  eventDate: {
+    fontSize: 14,
+    color: Colors.Textgray,
+  },
+  eventDescription: {
+    fontSize: 14,
+    color: Colors.black,
+  },
+  eventAddress: {
+    fontSize: 14,
+    color: Colors.gray,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+  },
+  attendanceButton: {
+    flex: 1,
+    backgroundColor: Colors.green,
+    padding: 10,
+    borderRadius: 5,
+    marginRight: 5,
     alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 10,
-    marginHorizontal: 20,
-    marginVertical: 20,
   },
-  buttonText: {
-    fontSize: 20,
+  declineButton: {
+    backgroundColor: Colors.red,
+    marginLeft: 5,
+  },
+  attendanceButtonText: {
     color: Colors.white,
     fontWeight: "bold",
   },
-  TextC: {
-    paddingTop: 100,
-    marginRight: 130,
-    fontSize: 25,
+  participantText: {
+    color: Colors.gray,
+    marginTop: 10,
+    textAlign: "center",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: Colors.white,
+    padding: 20,
+    borderRadius: 10,
+    width: "80%",
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  participantName: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  closeButton: {
+    marginTop: 10,
+    backgroundColor: Colors.salmon,
+    padding: 10,
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: Colors.white,
     fontWeight: "bold",
   },
-  cardCalender: {
-    flexDirection: "row",
-    width: 400,
-    height: 185,
-    marginHorizontal: 30,
+  errorText: {
+    color: Colors.white,
+    fontWeight: "bold",
   },
-  image: {
-    width: 130,
-    height: 90,
-    marginVertical: 45,
+  refreshText: {
+    color: Colors.salmon,
+    marginTop: 10,
+    textAlign: "center",
   },
-  TextCalen: {
-    fontSize: 20,
-    padding: 15,
-    marginRight: 100,
-    marginVertical: 25,
-    color: Colors.Textgray,
-    textAlign: "justify",
+  refreshButton: {
+    backgroundColor: Colors.salmon,
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  refreshButtonText: {
+    color: Colors.white,
+    fontWeight: "bold",
   },
 });

@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  ScrollView,
 } from "react-native";
 import Colors from "../contantes/Colors";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -14,6 +15,7 @@ import { api } from "../services/api";
 import { Loading } from "../components/Loading";
 import { AppNavigatorRoutesProps } from "../routes/protected.routes";
 import Map from "../components/Map";
+import { Button } from "../components/Button";
 
 interface Local {
   endereco: string;
@@ -80,7 +82,7 @@ export default function CreateEvent() {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <TextInput
         style={styles.input}
         placeholder="Nome do Evento"
@@ -139,6 +141,8 @@ export default function CreateEvent() {
         multiline
       />
 
+      <Text style={styles.subTitle}>Escolha o local do evento</Text>
+
       <Map onLocationSelected={handleLocationSelected} />
 
       <TouchableOpacity
@@ -150,11 +154,11 @@ export default function CreateEvent() {
           {loading ? <Loading /> : "Criar Evento"}
         </Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.white,
@@ -166,6 +170,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: Colors.salmon,
     textAlign: "center",
+    marginBottom: 20,
+  },
+  subTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: Colors.salmon,
+    textAlign: "left",
     marginBottom: 20,
   },
   input: {
